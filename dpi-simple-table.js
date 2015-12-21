@@ -117,10 +117,10 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 					}
 				  //check for potential links, and if so, convert
 				if(layout.linkColumns){
-					if(cell.qText.slice(0,4)==='http'){
+					if(cell.qText.slice(0,4).toLowerCase()==='http'){
 						html += '> <a href="' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
 					}
-					else if(cell.qText.slice(0,3)==='www'){
+					else if(cell.qText.slice(0,3).toLowerCase()==='www'){
 						html += '> <a href="http://' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
 					}
 					else{
@@ -129,7 +129,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 				}
 				  //check for potential images, and if so, convert
 				else if(layout.imageColumns){
-					if(~cell.qText.indexOf('img.') || ~cell.qText.indexOf('.jpg') || ~cell.qText.indexOf('.tiff') || ~cell.qText.indexOf('.gif') || ~cell.qText.indexOf('.png')){
+					if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif')){
 						html += '> <img src="' + cell.qText + '" height=' + layout.imageHeight + '></td>';
 					}
 					else{
@@ -174,4 +174,5 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 		}
 	};
 });
+
 
