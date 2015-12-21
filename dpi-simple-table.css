@@ -1,0 +1,22 @@
+/* CSS */
+.qv-object-dpi-simple-table div.qv-object-content-container {
+	overflow: auto;
+}
+.qv-object-dpi-simple-table td,
+.qv-object-dpi-simple-table th {
+	border-top: 10px solid #fff;
+	border-bottom: 10px solid #fff;
+	border-right: 10px solid #fff;
+	white-space: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	cursor: default;
+	font-size: 13px;
+}
+.qv-object-dpi-simple-table td.numeric {
+	text-align: right;
+}
+.qv-object-dpi-simple-table button {
+	width: 100%;
+}
