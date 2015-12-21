@@ -129,7 +129,8 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 				}
 				  //check for potential images, and if so, convert
 				else if(layout.imageColumns){
-					if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif')){
+				  	
+					if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png')){
 						html += '> <img src="' + cell.qText + '" height=' + layout.imageHeight + '></td>';
 					}
 					else{
@@ -174,5 +175,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 		}
 	};
 });
+
+
 
 
