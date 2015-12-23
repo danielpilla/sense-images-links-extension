@@ -115,8 +115,8 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 					} else {
 						html += "'";
 					}
-				  //check for potential links, and if so, convert
-				if(layout.linkColumns){
+				  //if just links is selected, check for links and convert
+				if(layout.linkColumns && !layout.imageColumns){
 					if(cell.qText.slice(0,4).toLowerCase()==='http'){
 						html += '> <a href="' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
 					}
@@ -127,11 +127,27 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 						html += '>' + cell.qText + '</td>';
 					}
 				}
-				  //check for potential images, and if so, convert
-				else if(layout.imageColumns){
-				  	
+				 
+				  //if just images is selected, check for images and convert
+				else if(layout.imageColumns && !layout.linkColumns){
 					if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png')){
-						html += '> <img src="' + cell.qText + '" height=' + layout.imageHeight + '></td>';
+					    html += '> <img src="' + cell.qText + '" height=' + layout.imageHeight + '></td>';
+					}
+					else{
+						html += '>' + cell.qText + '</td>';
+					}
+				}
+				  //if both images and links are selected, if an image, convert and add a link
+				  //if not an image, just convert to link
+				else if(layout.imageColumns && layout.linkColumns){
+					if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png')){
+					    html += '> <a href="' + cell.qText + '" target="_blank"><img src="' + cell.qText + '"" height=' + layout.imageHeight + '></a></td>';
+					}
+					else if(cell.qText.slice(0,4).toLowerCase()==='http'){
+						html += '> <a href="' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
+					}
+					else if(cell.qText.slice(0,3).toLowerCase()==='www'){
+						html += '> <a href="http://' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
 					}
 					else{
 						html += '>' + cell.qText + '</td>';
