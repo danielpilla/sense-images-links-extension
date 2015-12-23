@@ -2,7 +2,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 	$("<style>").html(cssContent).appendTo("head");
 	return {
 		initialProperties : {
-			version : 1.0,
+			version : 1.1,
 			qHyperCubeDef : {
 				qDimensions : [],
 				qMeasures : [],
