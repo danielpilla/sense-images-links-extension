@@ -5,7 +5,7 @@
 This extension is based off of the Simple Table extension, and allows for automatic detection of hyperlinks/images. The conditional logic currently looks for cell values with 'http'/'https' or 'www' for hyperlinks, and searches for 'img.', '.jpg', '.gif', and '.png' for image detection. Detection is controlled by switches, which allows the user to decide if they would like to show links, images, or neither. If both link and image detection is turned on, if an image is detected, it will also turn it into a clickable URL. The option also exists for the user to change the size of the images as well.
 
 
-<img style="-webkit-user-select: none" src="http://i.imgur.com/ACd8qG6.jpg" align="middle" width="300"><img style="-webkit-user-select: none" src="http://i.imgur.com/Xax6A3T.jpg" align="middle" width="150">
+<img style="-webkit-user-select: none" src="http://i.imgur.com/ACd8qG6.jpg" width="350"><img style="-webkit-user-select: none" src="http://i.imgur.com/Xax6A3T.jpg" width="150">
 
 
 Example Usage:
