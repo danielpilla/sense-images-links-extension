@@ -8,7 +8,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 				qMeasures : [],
 				qInitialDataFetch : [{
 					qWidth : 10,
-					qHeight : 50
+					qHeight : 1000
 				}]
 			}
 		},
