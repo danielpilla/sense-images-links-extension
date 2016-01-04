@@ -8,7 +8,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 				qMeasures : [],
 				qInitialDataFetch : [{
 					qWidth : 10,
-					qHeight : 1000
+					qHeight : 20
 				}]
 			}
 		},
@@ -163,6 +163,13 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 			});
 			html += "</tbody></table>";
 			$element.html(html);
+		  	$element.find('.selectable').on('qv-activate', function() {
+				if(this.hasAttribute("data-value")) {
+					var value = parseInt(this.getAttribute("data-value"), 10), dim = parseInt(this.getAttribute("data-dimension"), 10);
+					self.selectValues(dim, [value], true);
+					$element.find("[data-dimension='"+ dim +"'][data-value='"+ value+"']").toggleClass("selected");
+				}
+			});
 		}
 	};
 });
