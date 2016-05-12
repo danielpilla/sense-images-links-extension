@@ -125,7 +125,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 					 
 					  //if just images is selected, check for images and convert
 					else if(layout.imageColumns && !layout.linkColumns){
-						if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png')){
+						if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png') || ~cell.qText.toLowerCase().indexOf('.jpeg')){
 						    html += '> <img src="' + cell.qText + '" height=' + layout.imageHeight + '></td>';
 						}
 						else{
@@ -135,7 +135,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 					  //if both images and links are selected, if an image, convert and add a link
 					  //if not an image, just convert to link
 					else if(layout.imageColumns && layout.linkColumns){
-						if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png')){
+						if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png') || ~cell.qText.toLowerCase().indexOf('.jpeg')){
 						    html += '> <a href="' + cell.qText + '" target="_blank"><img src="' + cell.qText + '"" height=' + layout.imageHeight + '></a></td>';
 						}
 						else if(cell.qText.slice(0,4).toLowerCase()==='http'){
