@@ -24,6 +24,14 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 					uses : "measures",
 					min : 0
 				},
+				addons: {
+                    			uses: "addons",
+                    			items: {
+                        			dataHandling: {
+                            			uses: "dataHandling"
+                        			}
+                    			}
+                		},
 				sorting : {
 					uses : "sorting"
 				},
