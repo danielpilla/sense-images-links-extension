@@ -284,11 +284,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 								~address.toLowerCase().indexOf('.net')|| 
 								~address.toLowerCase().indexOf('.edu') || 
 								~address.toLowerCase().indexOf('.org') ||
-								~address.toLowerCase().indexOf('.gov') ||
-								~address.toLowerCase().indexOf('img.') || 
-								~address.toLowerCase().indexOf('.jpg') || 
-								~address.toLowerCase().indexOf('.gif') || 
-								~address.toLowerCase().indexOf('.png')
+								~address.toLowerCase().indexOf('.gov')
 								) 
 							{
 								selectable = '';
