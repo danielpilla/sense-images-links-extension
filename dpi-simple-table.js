@@ -7,7 +7,7 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 				qDimensions : [],
 				qMeasures : [],
 				qInitialDataFetch : [{
-					qWidth : 10,
+					qWidth : 15,
 					qHeight : 500
 				}]
 			}
@@ -24,19 +24,37 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 					uses : "measures",
 					min : 0
 				},
-				addons: {
-                    			uses: "addons",
-                    			items: {
-                        			dataHandling: {
-                            			uses: "dataHandling"
-                        			}
-                    			}
-                		},
 				sorting : {
 					uses : "sorting"
 				},
 				settings : {
-					uses : "settings",
+					uses : "settings"
+				},
+				rawHTML : {
+					label: 'Enable Raw Html',
+					type: 'items',
+					items : {
+						html:{
+						  type: "boolean",
+						  component: "switch",
+						  translation: "Enable Raw HTML Input",
+						  ref: "htmlInput",
+						  defaultValue: false,
+						  trueOption: {
+							  value: true,
+							  translation: "properties.on"
+							  },
+						  falseOption: {
+							  value: false,
+							  translation: "properties.off"
+							  },
+						  show: true
+						}
+					}
+				},
+				linkOptions : {
+					label: 'Link Options',
+					type: 'items',
 					items : {
 						links:{
 						  type: "boolean",
@@ -54,33 +72,126 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 							  },
 						  show: true
 						},
-						images : {
-							type : "items",
-							label : "Embedded Images",
-							items : {	
-								linkingColumns : {				
-								  type: "boolean",
-								  component: "switch",
-								  translation: "Enable Embedded Images",
-								  ref: "imageColumns",
-								  defaultValue: true,
-								  trueOption: {
-									  value: true,
-									  translation: "properties.on"
-									  },
-								  falseOption: {
-									  value: false,
-									  translation: "properties.off"
-									  },
-								  show: true
+						selectableLinksOption: {
+						  	type: "boolean",
+						  	component: "switch",
+						  	translation: "Selectable Links",
+							ref: "selectableLinks",
+							defaultValue: false,
+							trueOption: {
+								value: true,
+								translation: "properties.on"
 								},
-								imageHeight : {
-									ref : "imageHeight",
-									label : "Image Height",
-									type : "string",
-									defaultValue : 100
+							falseOption: {
+								value: false,
+								translation: "properties.off"
 								},
+						 	show : function(data) {
+								return data.linkColumns;
 							}
+						},
+						customLinkLabeling: {
+						  	type: "boolean",
+						  	component: "switch",
+						  	translation: "Custom Link Handling",
+							ref: "linkLabel",
+							defaultValue: false,
+							trueOption: {
+								value: true,
+								translation: "properties.on"
+								},
+							falseOption: {
+								value: false,
+								translation: "properties.off"
+								},
+						 	show : function(data) {
+								return data.linkColumns;
+							}
+						},
+						delimiterOnOff: {
+						  type: "boolean",
+						  component: "switch",
+						  translation: "Enable Delimiter",
+						  ref: "delimiterSwitch",
+						  defaultValue: false,
+						  trueOption: {
+							  value: true,
+							  translation: "properties.on"
+							  },
+						  falseOption: {
+							  value: false,
+							  translation: "properties.off"
+							  },
+						 	show : function(data) {
+								return data.linkLabel;
+							}
+						},
+						customDelimiter: {
+								ref : "delimiter",
+								label : "Delimiter for Link Label",
+								type : "string",
+								defaultValue : '',
+							 	show : function(data) {
+									return data.linkLabel  && data.delimiterSwitch;
+								}
+						},
+						staticLabelOnOff: {
+						  type: "boolean",
+						  component: "switch",
+						  translation: "Enable Static Label",
+						  ref: "labelSwitch",
+						  defaultValue: false,
+						  trueOption: {
+							  value: true,
+							  translation: "properties.on"
+							  },
+						  falseOption: {
+							  value: false,
+							  translation: "properties.off"
+							  },
+						 	show : function(data) {
+								return data.linkLabel;
+							}
+						},
+						customTitle: {
+								ref : "customLabel",
+								label : "Static title",
+								type : "string",
+								defaultValue : '',
+							 	show : function(data) {
+									return data.linkLabel  && data.labelSwitch;
+								}
+						}
+					}
+				},
+				imageOptions : {
+					label: 'Image Options',
+					type: 'items',
+					items : {
+						images : {				
+							  type: "boolean",
+							  component: "switch",
+							  translation: "Enable Embedded Images",
+							  ref: "imageColumns",
+							  defaultValue: true,
+							  trueOption: {
+								  value: true,
+								  translation: "properties.on"
+								  },
+							  falseOption: {
+								  value: false,
+								  translation: "properties.off"
+								  },
+							  show: true
+						},
+						imageHeight: {
+								ref : "imageHeight",
+								label : "Image Height",
+								type : "string",
+								defaultValue : 100,
+							 	show : function(data) {
+									return data.imageColumns;
+								}
 						}
 					}
 				}
@@ -91,6 +202,49 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 		},
 		paint : function($element, layout) {
 			var html = "<table><thead><tr>", self = this, lastrow = 0, dimcount = this.backendApi.getDimensionInfos().length;
+
+			// handle link address and link labels depending on the link option settings
+			function deriveLabels (input) {
+				var address='';
+				var label='';
+				if(input !== undefined) {
+					if (layout.linkLabel && layout.linkColumns) {
+						if(layout.labelSwitch && layout.customLabel && layout.delimiterSwitch && layout.delimiter) {
+							label = layout.customLabel;
+							if(input.indexOf(layout.delimiter)>0) {
+								address = input.slice(0,input.indexOf(layout.delimiter));
+							}
+							else {
+								address = input;
+							}						}
+						else if(layout.delimiterSwitch && layout.delimiter) {
+							if(input.indexOf(layout.delimiter)>0) {
+								label = input.slice(input.indexOf(layout.delimiter)+1);
+								address = input.slice(0,input.indexOf(layout.delimiter));
+							}
+							else {
+								label = input;
+								address = input;
+							}
+						}
+						else if(layout.labelSwitch && layout.customLabel) {
+							label = layout.customLabel;
+							address = input;
+						}
+						else {
+							label = input;
+							address = input;
+						}
+					}
+					else {
+						label = input;
+						address = input;
+					}
+				}
+				return [label, address];
+			}
+
+
 			//render titles
 			$.each(this.backendApi.getDimensionInfos(), function(key, value) {
 				html += '<th align="left">' + value.qFallbackTitle + '</th>';
@@ -111,60 +265,108 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 					if(!isNaN(cell.qNum)) {
 						html += "numeric ";
 					}
-					//negative elementnumbers are not selectable
+
+					if (!layout.htmlInput) {
+						var labelAddressArray = deriveLabels(cell.qText);
+						var label = labelAddressArray[0];
+						var address = labelAddressArray[1];
+					
+						// toggle selectable for links, so that when you click a link, it won't necessarily drill to it
+						var selectable = '';
+
+						if (layout.selectableLinks) {
+							selectable = 'selectable'
+						}
+						else {
+							if( ~address.slice(0,4).toLowerCase()==='http' ||
+								~address.slice(0,3).toLowerCase()==='www' ||
+								~address.toLowerCase().indexOf('.com') || 
+								~address.toLowerCase().indexOf('.net')|| 
+								~address.toLowerCase().indexOf('.edu') || 
+								~address.toLowerCase().indexOf('.org') ||
+								~address.toLowerCase().indexOf('.gov') ||
+								~address.toLowerCase().indexOf('img.') || 
+								~address.toLowerCase().indexOf('.jpg') || 
+								~address.toLowerCase().indexOf('.gif') || 
+								~address.toLowerCase().indexOf('.png')
+								) 
+							{
+								selectable = '';
+							} 
+							else {
+									selectable = 'selectable';
+							}
+						}
+					}
+					else {
+						var selectable = 'selectable';
+						var address = '';
+						var label = '';
+					}
+					// enable selectable
 					if(key < dimcount && cell.qElemNumber > -1) {
-						html += "selectable' data-value='" + cell.qElemNumber + "' data-dimension='" + key + "'";
+						html += selectable + "' data-value='" + cell.qElemNumber + "' data-dimension='" + key + "'";
 					} else {
 						html += "'";
 					}
-				  //if just links is selected, check for links and convert
-				if(cell.qText !== undefined) {
-					if(layout.linkColumns && !layout.imageColumns){
-						if(cell.qText.slice(0,4).toLowerCase()==='http'){
-							html += '> <a href="' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
-						}
-						else if(cell.qText.slice(0,3).toLowerCase()==='www'){
-							html += '> <a href="http://' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
+						if(label !== undefined) {
+							if (!layout.htmlInput) {
+								//if just links is selected, check for links and convert
+								if(layout.linkColumns && !layout.imageColumns){
+									if(address.slice(0,4).toLowerCase()==='http'){
+										html += '> <a href="' + address + '" target="_blank">' + label + '</a></td>';
+									}
+									else if(address.slice(0,3).toLowerCase()==='www'){
+										html += '> <a href="http://' + address + '" target="_blank">' + label + '</a></td>';
+									}
+									else if(address.toLowerCase().indexOf('.com')>0 || address.toLowerCase().indexOf('.net')>0 || address.toLowerCase().indexOf('.edu')>0 || address.toLowerCase().indexOf('.gov')>0) {
+										html += '> <a href="' + address + '" target="_blank">' + label + '</a></td>';
+									}
+									else{
+										html += '>' + address + '</td>';
+									}
+								}
+								//if just images is selected, check for images and convert
+								else if(layout.imageColumns && !layout.linkColumns){
+									if(~address.toLowerCase().indexOf('img.') || ~address.toLowerCase().indexOf('.jpg') || ~address.toLowerCase().indexOf('.gif') || ~address.toLowerCase().indexOf('.png')){
+									    html += '> <img src="' + address + '" height=' + layout.imageHeight + '></td>';
+									}
+									else{
+										html += '>' + address + '</td>';
+									}
+								}
+								//if both images and links are selected, if an image, convert and add a link
+								//if not an image, just convert to link
+								else if(layout.imageColumns && layout.linkColumns){
+									if(~address.toLowerCase().indexOf('img.') || ~address.toLowerCase().indexOf('.jpg') || ~address.toLowerCase().indexOf('.gif') || ~address.toLowerCase().indexOf('.png')){
+									    html += '> <a href="' + address + '" target="_blank"><img src="' + label + '"" height=' + layout.imageHeight + '></a></td>';
+									}
+									else if(address.slice(0,4).toLowerCase()==='http'){
+										html += '> <a href="' + address + '" target="_blank">' + label + '</a></td>';
+									}
+									else if(address.slice(0,3).toLowerCase()==='www'){
+										html += '> <a href="http://' + address + '" target="_blank">' + label + '</a></td>';
+									}
+									else if(address.toLowerCase().indexOf('.com')>0 || address.toLowerCase().indexOf('.net')>0 || address.toLowerCase().indexOf('.edu')>0 || address.toLowerCase().indexOf('.gov')>0) {
+										html += '> <a href="' + address + '" target="_blank">' + label + '</a></td>';
+									}
+									else{
+										html += '>' + address + '</td>';
+									}
+								}
+							  	//otherwise, no formatting
+								else{
+								html += '>' + address + '</td>';
+								}
+							}
+							else {
+								html += '>' + cell.qText + '</td>';
+							}
+						// value is undefined, fill with null value
 						}
 						else{
-							html += '>' + cell.qText + '</td>';
+							html += '>' + '</td>';
 						}
-					}
-					 
-					  //if just images is selected, check for images and convert
-					else if(layout.imageColumns && !layout.linkColumns){
-						if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png') || ~cell.qText.toLowerCase().indexOf('.jpeg')){
-						    html += '> <img src="' + cell.qText + '" height=' + layout.imageHeight + '></td>';
-						}
-						else{
-							html += '>' + cell.qText + '</td>';
-						}
-					}
-					  //if both images and links are selected, if an image, convert and add a link
-					  //if not an image, just convert to link
-					else if(layout.imageColumns && layout.linkColumns){
-						if(~cell.qText.toLowerCase().indexOf('img.') || ~cell.qText.toLowerCase().indexOf('.jpg') || ~cell.qText.toLowerCase().indexOf('.gif') || ~cell.qText.toLowerCase().indexOf('.png') || ~cell.qText.toLowerCase().indexOf('.jpeg')){
-						    html += '> <a href="' + cell.qText + '" target="_blank"><img src="' + cell.qText + '"" height=' + layout.imageHeight + '></a></td>';
-						}
-						else if(cell.qText.slice(0,4).toLowerCase()==='http'){
-							html += '> <a href="' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
-						}
-						else if(cell.qText.slice(0,3).toLowerCase()==='www'){
-							html += '> <a href="http://' + cell.qText + '" target="_blank">' + cell.qText + '</a></td>';
-						}
-						else{
-							html += '>' + cell.qText + '</td>';
-						}
-					}
-				  //otherwise, no formatting
-					else{
-					html += '>' + cell.qText + '</td>';
-					}
-				}
-				  // value is undefined, fill with null value
-				else{
-					html += '>' + '</td>';
-				}
 
 				});
 				html += '</tr>';			    
@@ -181,8 +383,6 @@ define(["jquery", "text!./dpi-simple-table.css"], function($, cssContent) {'use 
 		}
 	};
 });
-
-
 
 
 
